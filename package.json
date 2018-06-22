@@ -4,12 +4,13 @@
   "version": "1.0.0",
   "dependencies": {
     "bootstrap": "^3.3.6",
+    "event-source-polyfill": "^0.0.7",
+    "isomorphic-fetch": "^2.2.1",
     "jquery": "^3.1.1",
     "vue": "^2.2.2",
     "vue-property-decorator": "^5.0.1",
     "vue-router": "^2.8.1",
-    "event-source-polyfill": "^0.0.7",
-    "isomorphic-fetch": "^2.2.1"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@types/webpack-env": "^1.13.0",

@@ -24,4 +24,8 @@ export default class ProductListComponent extends Vue {
     created() {
         console.log('ProductListComponent is created');
     }
+
+    mounted() {
+        console.log(this.$store.state.catalog.cart);
+    }
 }
