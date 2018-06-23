@@ -1,4 +1,5 @@
 #region using
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +7,10 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using MyStore.Data;
+using MyStore.Models;
+using System.Text;
 #endregion
 
 namespace MyStore
@@ -27,9 +31,29 @@ namespace MyStore
                     .AddEntityFrameworkStores<StoreContext>();
 
             services.AddDbContext<StoreContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyStoreDb")));
-            
+
+            // Enable JWT authentication
+            services.AddAuthentication()
+                    .AddCookie()
+                    .AddJwtBearer(options => {
+                        options.TokenValidationParameters = new TokenValidationParameters()
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = Configuration["Security:Tokens:Issuer"],
+                            ValidateAudience = true,
+                            ValidAudience = Configuration["Security:Tokens:Audience"],
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Security:Tokens:Key"]))
+                        };
+                    });
+
+            services.AddAutoMapper(config => {
+                config.AddProfile<AutoMapperProfile>();
+            });
+
             // Configure services
             services.AddScoped<StoreDbInitializer>();
+            services.AddScoped<IStoreRepository, ProductRepository>();
 
             services.AddMvc();
         }
@@ -51,6 +75,8 @@ namespace MyStore
             }
 
             app.UseStaticFiles();
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

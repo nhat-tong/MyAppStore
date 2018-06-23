@@ -12,7 +12,10 @@ module.exports = (env) => {
         'isomorphic-fetch',
         'jquery',
         'vue',
-        'vue-router'
+        'vue-router',
+        'vuex',
+        'lodash',
+        'axios'
     ];
 
     return [{

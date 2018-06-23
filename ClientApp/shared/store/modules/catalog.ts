@@ -2,34 +2,66 @@
 import Vuex from 'vuex';
 import { Module, GetterTree, MutationTree, ActionTree } from 'vuex';
 import * as T from '../types';
+import { CartItem } from '../types';
+import * as _ from 'lodash';
+import axios, { AxiosResponse } from 'axios';
+import { Promise } from 'es6-promise';
 
 // initial state
-interface State {
-    cart: [T.Product]
-}
+class State {
+    catalog: [T.Product];
+    cart: [T.CartItem];
 
-const state: State = {
-    cart: [
-        { name: 'product 1', price: 20, quantity: 3, code: 'AYZE1' },
-        { name: 'product 2', price: 25, quantity: 4, code: 'AYZE2' },
-        { name: 'product 3', price: 30, quantity: 5, code: 'AYZE3' },
-        { name: 'product 4', price: 35, quantity: 6, code: 'AYZE4' },
-        { name: 'product 5', price: 40, quantity: 7, code: 'AYZE5' }
-    ]
+    constructor() { }
 }
 
 // getters
-const getters: GetterTree<State, any> = {
-    length: (state: State) => state.cart.length
-}
+const getters: GetterTree<State, any> = {}
 
 // mutations
 const mutations: MutationTree<State> = {
-    splice: (state: State) => state.cart.splice(1, 1)
+    setCatalog: (state: State, newCatalog: [T.Product]) => {
+        state.catalog = newCatalog
+    },
+    addToCart: (state: State, product: T.Product) => {
+        let item = _.find(state.cart, { code: product.gtinCode });
+        if (item) {
+            item.quantity++;
+        }
+        else {
+            state.cart.push(new T.CartItem(product));
+        }
+    },
+    deleteCartItem: (state: State, item: T.CartItem) => {
+        let index = _.findIndex(state.cart, { code: item.code });
+        if (index != -1) {
+            state.cart.splice(index, 1);
+        }
+    }
 }
 
 // actions
-const actions: ActionTree<State, any> = {}
+const actions: ActionTree<State, any> = {
+    loadCatalog: (context) => {
+        return axios.get('/api/products')
+            .then((res: AxiosResponse<any>) =>
+            {
+                context.commit('setCatalog', res.data.results);
+            });
+    },
+    findProduct: (context, code) => {
+        return new Promise(function (resolve, reject) {
+            axios.get("/api/products")
+                .then(function (res) {
+                    context.commit("setCatalog", res.data.results);
+                    resolve();
+                })
+                .catch(function () {
+                    reject();
+                });
+        });
+    }
+}
 
 export class CatalogModule implements Module<State, any> {
     namespaced: boolean = true;
@@ -42,6 +74,6 @@ export class CatalogModule implements Module<State, any> {
 
     // create everything
     constructor() {
-        this.state = state;
+        this.state = new State();
     }
 }

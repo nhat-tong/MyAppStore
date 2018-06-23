@@ -3,10 +3,14 @@
   "private": true,
   "version": "1.0.0",
   "dependencies": {
+    "@types/lodash": "^4.14.110",
+    "axios": "^0.18.0",
     "bootstrap": "^3.3.6",
+    "es6-promise": "^4.2.4",
     "event-source-polyfill": "^0.0.7",
     "isomorphic-fetch": "^2.2.1",
     "jquery": "^3.1.1",
+    "lodash": "^4.17.10",
     "vue": "^2.2.2",
     "vue-property-decorator": "^5.0.1",
     "vue-router": "^2.8.1",
@@ -22,8 +26,8 @@
     "style-loader": "^0.13.1",
     "typescript": "^2.2.1",
     "url-loader": "^0.5.7",
-    "vue-template-compiler": "^2.2.2",
     "vue-loader": "^11.1.4",
+    "vue-template-compiler": "^2.2.2",
     "webpack": "^2.5.1",
     "webpack-hot-middleware": "^2.18.2"
   }
